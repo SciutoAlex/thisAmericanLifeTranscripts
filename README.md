@@ -14,7 +14,10 @@ Data Included
 * `series_counter` An index of the number of paragraphs spoken for the entire history of the show. Begins at 1.
 * `episode_number` The TAL episode number. Begins at 1.
 * `episode_date` Date of original airing. Formatted as `01.23.2003`.
+<<<<<<< HEAD
 * `episode_title` Title of the episode.
+=======
+>>>>>>> FETCH_HEAD
 * `episode_link` Link to the thisamericanlife.org archive page for the episode
 * `act_name` Name of the act. Acts include "Prologue" and "Credits"
 * `act_number` Number of the act. Begins at 0 for prologue.

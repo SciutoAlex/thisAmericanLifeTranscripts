@@ -9,6 +9,7 @@ var time_random = 10000;
 var maxEpisode = 544;
 var minEpisode = 0;
 
+<<<<<<< HEAD
 //Create a directory for the files
 if(!fs.existsSync('./transcripts')) {
   fs.mkdirSync('./transcripts');
@@ -17,6 +18,11 @@ if(!fs.existsSync('./transcripts')) {
 
 //Begin the show
 console.log('beginning download');
+=======
+
+
+//Begin the show
+>>>>>>> FETCH_HEAD
 next();
 function next() {
   if(minEpisode < maxEpisode) {
@@ -34,7 +40,11 @@ function next() {
 
 function readTAL(err, res, body) {
   if (!err && res.statusCode == 200) {
+<<<<<<< HEAD
     fs.writeFile(returnFileName(minEpisode), body, function(err) {
+=======
+    fs.writeFile("./TAL/show-"+minEpisode+".html", body, function(err) {
+>>>>>>> FETCH_HEAD
       if(err) {
         console.log(err);
         next();

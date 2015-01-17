@@ -28,5 +28,10 @@ node_modules
 .lock-wscript
 
 # TAL
+<<<<<<< HEAD
 transcripts
 output
+=======
+transcripts/*
+output/*
+>>>>>>> FETCH_HEAD

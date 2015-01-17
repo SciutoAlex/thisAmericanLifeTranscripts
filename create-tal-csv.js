@@ -6,7 +6,11 @@ var request = require('request');
 var csv = require('csv')
 
 //local variables
+<<<<<<< HEAD
 var records = [['series_counter', 'episode_number', 'episode_date', 'episode_title', 'episode_link', 'act_name', 'act_number', 'speaker_name', 'paragraph_number_per_speaker', 'time_stamp', 'content']];
+=======
+var records = [['series_counter', 'episode_number', 'episode_date', 'episode_link', 'act_name', 'act_number', 'speaker_name', 'paragraph_number_per_speaker', 'time_stamp', 'content']];
+>>>>>>> FETCH_HEAD
 
 
 //Variables to control which shows to request. Check out thisamericalife.org to see latest episode number
@@ -14,6 +18,7 @@ var maxEpisode = 544;
 var minEpisode = 0;
 var counter = minEpisode;
 
+<<<<<<< HEAD
 //Check to see if there are html files to combine
 if(!fs.existsSync('./transcripts')) {
     console.log('You need to first download some TAL transcripts. type "node get-html-files.js" to download them. Then run this script after.');
@@ -22,11 +27,17 @@ if(!fs.existsSync('./transcripts')) {
 
 //Begin the show
 console.log('Beginning Parse');
+=======
+
+
+//Begin the show
+>>>>>>> FETCH_HEAD
 next();
 function next() {
   if(counter < maxEpisode) {
     counter++;
     fs.readFile(returnFileName(counter), 'utf8', function(err, body) {
+<<<<<<< HEAD
 
       if(!err) {
         addHtmlToCsv(records, body, next);
@@ -34,14 +45,25 @@ function next() {
       } else {
         console.log(err)
         next();
+=======
+      if(!err) {
+        addHtmlToCsv(records, body, next);
+        console.log(counter);
+      } else {
+        next();
+
+>>>>>>> FETCH_HEAD
       }
     });
   } else {
     csv.stringify(records, function(err, data) {
       if(!err) {
+<<<<<<< HEAD
         if(!fs.existsSync('./output')) {
           fs.mkdirSync('./output');
         }
+=======
+>>>>>>> FETCH_HEAD
         fs.writeFile('./output/data.csv', data);
       } else {
         console.log('something went wrong with the csv stringify');
