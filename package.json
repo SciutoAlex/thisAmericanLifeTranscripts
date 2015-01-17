@@ -1,0 +1,33 @@
+{
+  "name": "iacd-temboo-scrape",
+  "version": "0.0.0",
+  "description": "A scraper for something",
+  "main": "index.js",
+  "scripts": {
+    "test": "test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SciutoAlex/iacd-temboo-scrape.git"
+  },
+  "keywords": [
+    "scraper",
+    "temboo",
+    "nytimes"
+  ],
+  "author": "Alex Sciuto",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SciutoAlex/iacd-temboo-scrape/issues"
+  },
+  "homepage": "https://github.com/SciutoAlex/iacd-temboo-scrape",
+  "devDependencies": {
+    "cheerio": "^0.18.0",
+    "csv": "^0.4.1",
+    "d3": "^3.5.3",
+    "jquery": "^2.1.3",
+    "jsdom": "^2.0.0",
+    "request": "^2.51.0",
+    "temboo": "^1.7.7"
+  }
+}
