@@ -5,7 +5,7 @@ This American Life, America's favorite radio show. It's been on for almost twent
 
 Out of respect for This American Life, this repo doesn't include the full datasource (~50mb, 120,000 lines). You've got to download the repo and parse the data yourself. Instructions are included below. The final CSV file breaks down the show by each paragraph of spoken content.
 
-[See a preview of the data.](www.google.com/)
+[See a preview of the data.](https://github.com/SciutoAlex/thisAmericanLifeTranscripts/blob/master/example-data.csv)
 
 I'm a huge fan of the show. If anyone at the show has a problem with this little project, contact me, and I'll gladly take it now. Thanks!
 
