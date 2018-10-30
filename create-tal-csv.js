@@ -9,9 +9,8 @@ var csv = require('csv')
 var records = [['series_counter', 'episode_number', 'episode_date', 'episode_title', 'episode_link', 'act_name', 'act_number', 'speaker_name', 'paragraph_number_per_speaker', 'time_stamp', 'content']];
 
 
-
 //Variables to control which shows to request. Check out thisamericalife.org to see latest episode number
-var maxEpisode = 544;
+var maxEpisode = 659;
 var minEpisode = 0;
 var counter = minEpisode;
 
@@ -30,8 +29,15 @@ function next() {
     counter++;
     fs.readFile(returnFileName(counter), 'utf8', function(err, body) {
       if(!err) {
-        addHtmlToCsv(records, body, next);
-        console.log('Show No.'+ counter +' parsed');
+        fs.readFile(returnEpisodeFileName(counter), 'utf8', function(err, episodeBody) {
+          if (!err) {
+            addHtmlToCsv(records, body, episodeBody, next);
+            console.log('Show No.'+ counter +' parsed');
+          } else {
+            console.log(err);
+            next();
+          }
+        });
       } else {
         console.log(err)
         next();
@@ -52,31 +58,35 @@ function next() {
 }
 
 
-function addHtmlToCsv(obj, html, cb) {
+function addHtmlToCsv(obj, html, episodeHtml, cb) {
   $ = cheerio.load(html);
+  ep$ = cheerio.load(episodeHtml);
   var showCounter = 0;
   var seriesCounter = obj.length;
 
-  var epNumb = getEpisodeNumber($('.radio-episode-num').html());
-  var dateString = getDateString($('.radio-date').html());
-  var episodeName = $('.radio h2 a').text();
-  var episodeLink = "http://www.thisamericanlife.org" + $('.radio h2 a').attr('href');
+  var epNumb = parseInt(ep$(".episode-header .field-name-field-episode-number").text());
+  var dateString = getDateString(ep$(".episode-header .field-name-field-radio-air-date").text());
+  var episodeName = ep$(".episode-header .episode-title").text().replace(/^\s+|\s+$/g, '');
+  var episodeLink = ep$("meta[property='og:url']").attr('content');
 
   var acts = $('.act');
   var actCounter = 0;
   acts.each(function() {
     var act = $(this);
-    var actName = act.find('h3').text();
+    var actName = act.find('h3').text().trim();
     var speakingParts = act.find('.subject, .interviewer, .host');
+    var lastSpeaker;
+    var speakingCounter = 0;
     speakingParts.each(function() {
-      var speakingCounter = 0;
       var speakingPart = $(this).attr('class');
-      var speaker = $(this).find('h4').text();
+      var speaker = $(this).find('h4').text().trim();
       if(!speaker && speakingPart == "host") { speaker = "Ira Glass"; }
+      if (lastSpeaker != speaker) speakingCounter = 0;
+      lastSpeaker = speaker;
       var paragraphs = $(this).find('p');
       paragraphs.each(function() {
         var time = $(this).attr('begin');
-        var content = $(this).text();
+        var content = $(this).text().trim();
         obj.push([
             seriesCounter,
             epNumb,
@@ -107,14 +117,22 @@ function returnURL(number) {
 }
 
 function returnFileName(number) {
-  return "./transcripts/show-"+number+".html";
+  return "./transcripts/transcript-"+number+".html";
+}
+
+function returnEpisodeFileName(number) {
+  return "./transcripts/episode-"+number+".html";
 }
 
 function getEpisodeNumber(str) {
-  return str.substr(0, str.length-1);
+  return str.split(':')[0];
 }
 
 function getDateString(str) {
-  str = str.substr(17, str.length);
-  return str;
+  var date = new Date(Date.parse(str));
+  return date.toJSON();
+}
+
+function getTitle(str) {
+  return str.split(':')[1];
 }

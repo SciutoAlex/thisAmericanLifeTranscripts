@@ -1,28 +1,21 @@
 var fs     = require('fs');
 var request = require('request');
+var cheerio = require('cheerio');
 
 //Variables to control the wait period between HTTP requests to TAL
-var time_base = 5000;
-var time_random = 10000;
+var time_base = 500;
+var time_random = 1000;
 
 //Variables to control which shows to request. Check out thisamericalife.org to see latest episode number
-var maxEpisode = 544;
-var minEpisode = 0;
+var maxEpisode = 460;
+var minEpisode = 459;
 
-<<<<<<< HEAD
-//Create a directory for the files
+// create directory
 if(!fs.existsSync('./transcripts')) {
   fs.mkdirSync('./transcripts');
 }
 
-
-//Begin the show
 console.log('beginning download');
-=======
-
-
-//Begin the show
->>>>>>> FETCH_HEAD
 next();
 function next() {
   if(minEpisode < maxEpisode) {
@@ -30,7 +23,7 @@ function next() {
     if (!fs.existsSync(returnFileName(minEpisode))) {
       setTimeout(function() {
         request(returnURL(minEpisode), readTAL);
-      }, Math.random()*time_random + time_base);
+      }, time_base);
     } else {
       console.log("skipped number: " + minEpisode);
       next();
@@ -40,16 +33,37 @@ function next() {
 
 function readTAL(err, res, body) {
   if (!err && res.statusCode == 200) {
-<<<<<<< HEAD
     fs.writeFile(returnFileName(minEpisode), body, function(err) {
-=======
-    fs.writeFile("./TAL/show-"+minEpisode+".html", body, function(err) {
->>>>>>> FETCH_HEAD
       if(err) {
         console.log(err);
         next();
       } else {
-        console.log("Show "+minEpisode+" was saved!");
+        console.log("Transcript for "+minEpisode+" was saved!");
+
+        if (!fs.existsSync(returnEpisodeFileName(minEpisode))) {
+          setTimeout(function() {
+            request(getEpisodeLink(body), readEpisode);
+          }, time_base);
+        } else {
+          console.log("skipped number: " + minEpisode);
+          next();
+        }
+      }
+    });
+  } else {
+    console.log(err);
+    next();
+  }
+}
+
+function readEpisode(err, res, body) {
+  if (!err && res.statusCode == 200) {
+    fs.writeFile(returnEpisodeFileName(minEpisode), body, function(err) {
+      if(err) {
+        console.log(err);
+        next();
+      } else {
+        console.log("Episode for "+minEpisode+" was saved!");
         next();
       }
     });
@@ -59,11 +73,20 @@ function readTAL(err, res, body) {
   }
 }
 
+function getEpisodeLink(html) {
+  $ = cheerio.load(html);
+  return "http://www.thisamericanlife.org" + $('article a').attr('href');
+}
+
 function returnURL(number) {
-  var baseUrl = "http://www.thisamericanlife.org/radio-archives/episode/"+number+"/transcript";
+  var baseUrl = "http://www.thisamericanlife.org/"+number+"/transcript";
   return {url: baseUrl};
 }
 
 function returnFileName(number) {
-  return "./transcripts/show-"+number+".html";
+  return "./transcripts/transcript-"+number+".html";
+}
+
+function returnEpisodeFileName(number) {
+  return "./transcripts/episode-"+number+".html";
 }
