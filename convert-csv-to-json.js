@@ -1,8 +1,11 @@
 var fs = require('fs');
 var parse = require('csv-parse');
 
+// set output directory
+var inputFile = 'output/data.csv';
 var outputDir = 'output';
 
+// convert timestamps to seconds
 function parseTime(str) {
   var h_m_s = str.split(':');
   var hours = parseFloat(h_m_s[0]);
@@ -11,6 +14,7 @@ function parseTime(str) {
   return hours*3600 + mins*60 + secs;
 }
 
+// write episode to json file
 function writeJSON(episode) {
   fs.writeFile(outputDir+'/'+episode.episode+'.json', JSON.stringify(episode), (err) => {
     if (err) console.log('Error writing file for episode '+episode.episode);
@@ -18,6 +22,7 @@ function writeJSON(episode) {
   });
 }
 
+// use regex to identify music and effects
 function findLineType(line) {
   if (line.match(/^\[MUSIC[A-Z\W ]*\]$/)) {
     return 'music';
@@ -28,6 +33,7 @@ function findLineType(line) {
   }
 }
 
+// convert string to Title Case
 function toTitleCase(str) {
   str = str.toLowerCase().split(' ');
   for (var i = 0; i < str.length; i++) {
@@ -36,6 +42,7 @@ function toTitleCase(str) {
   return str.join(' ');
 };
 
+// convert string to Sentence case
 function toSentenceCase(str) {
   str = str.toLowerCase();
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -48,17 +55,19 @@ var firstLine = true;
 
 var parser = parse({delimiter: ','}).on('data', function(entry)
 {
+  // ignore header line
   if (firstLine) {
     firstLine = false;
     return;
   }
 
+  // find time, line and line type
 	var time = parseTime(entry[9]);
 	var line = entry[10];
 	var lineType = findLineType(line);
 
 	//=======================================================
-	// ADD
+	// Add acts, speakers, music, effects and paragraphs
 
 	if (act && parseInt(entry[6]) != act.number) {
 		if (time<act.start) act.end=-1;
@@ -97,6 +106,7 @@ var parser = parse({delimiter: ','}).on('data', function(entry)
 		paragraph = null;
 	}
 
+  // if at end of episode, write file
 	if (episode && parseInt(entry[1]) != episode.episode) {
 		episode.transcript = transcript;
 		episode.segments = segments;
@@ -107,7 +117,7 @@ var parser = parse({delimiter: ','}).on('data', function(entry)
 	}
 
 	//=======================================================
-	// PARSE
+	// Parse episode, act, speaker, music, effects and paragraph data
 
 	if (!episode) {
 		episode = {
@@ -172,30 +182,5 @@ var parser = parse({delimiter: ','}).on('data', function(entry)
 	}
 });
 
-//if (act) {
-  //act.end = -1;
-  //segments.push(act);
-//}
-//if (speaker) {
-  //speaker.end = -1;
-  //segments.push(speaker);
-//}
-//if (music) {
-  //music.end = -1;
-  //segments.push(music);
-//}
-//if (effects) {
-  //effects.end = -1;
-  //segments.push(effects);
-//}
-//if (paragraph) {
-  //paragraph.end = -1;
-  //segments.push(paragraph);
-//}
-
-//episode.segments = segments;
-//writeJSON(episode);
-
-//});
-
-fs.createReadStream(__dirname+'/output/data.csv').pipe(parser);
+// read file
+fs.createReadStream(__dirname+'/'+inputFile).pipe(parser);
