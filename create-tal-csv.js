@@ -49,7 +49,10 @@ function next() {
         if(!fs.existsSync('./output')) {
           fs.mkdirSync('./output');
         }
-        fs.writeFile('./output/data.csv', data);
+        fs.writeFile('./output/data.csv', data, function(err) {
+          if (err) console.log("Could not save file");
+          else console.log("File saved");
+        });
       } else {
         console.log('something went wrong with the csv stringify');
       }
